@@ -32,3 +32,33 @@ export const registerUser = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+export const loginUser = async (req, res) => {
+    try {
+        const {email, password} = req.body; //necessary fields for login an user
+        const hashedPassword = await bcrypt.hash(password, 10); //hash the password before compare with the hashed password in database
+
+        if(!email || !password) { //check if all fields are filled, if not, return an error message
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
+        const user = await prisma.user.findUnique({ //find user by email
+            where: { email }
+        });
+
+        if (!user) { //if user not found, return an error message
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        const check_pass= await bcrypt.compare(hashedPassword, user.password); //compare the password with the hashed password in database
+
+        if (!check_pass) { //if password is incorrect, return an error message
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        res.status(200).json({ message: 'User logged in successfully', user }); //return success message and the user data
+    }catch (error) {
+        console.error('Error Loggin in User:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};

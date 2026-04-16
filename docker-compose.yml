@@ -33,6 +33,7 @@ services:
     tty: true
     depends_on:
       - backend
+    command: sh -c "npm install && npm start"
     restart: always
   
   db:
