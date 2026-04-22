@@ -35,10 +35,9 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-        const {email, password} = req.body; //necessary fields for login an user
-        const hashedPassword = await bcrypt.hash(password, 10); //hash the password before compare with the hashed password in database
+        const { email, password } = req.body; //necessary fields for login an user
 
-        if(!email || !password) { //check if all fields are filled, if not, return an error message
+        if (!email || !password) { //check if all fields are filled, if not, return an error message
             return res.status(400).json({ message: 'Email and password are required' });
         }
 
@@ -50,7 +49,7 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
 
-        const check_pass= await bcrypt.compare(hashedPassword, user.password); //compare the password with the hashed password in database
+        const check_pass = await bcrypt.compare(password, user.password); //compare the password with the hashed password in database
 
         if (!check_pass) { //if password is incorrect, return an error message
             return res.status(400).json({ message: 'Invalid email or password' });

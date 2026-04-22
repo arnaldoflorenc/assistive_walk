@@ -13,22 +13,25 @@ function Cadastro() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		async function cadastrarUsuario() {
-            try {
-                await fetch('http://localhost:5000/users/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(form),
-                });
-            }   catch (error) { 
-                console.error('Erro ao cadastrar usuário:', error);
-            }
-        }
-		await cadastrarUsuario();
-
-		setMensagem('Usuário cadastrado com sucesso!');
+		try {
+			const response = await fetch('http://localhost:5000/users/register', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(form),
+			});
+			if (response.ok) {
+				setMensagem('Cadastro realizado com sucesso!');
+			} else {
+				const data = await response.json();
+				if (data && data.message) {
+					setMensagem('Erro ao cadastrar usuário.');
+				}
+			}
+		} catch (error) {
+			setMensagem('Erro ao conectar ao servidor.');
+		}
 	};
 
 	return (
@@ -75,7 +78,9 @@ function Cadastro() {
 							Cadastrar
 						</button>
 					</form>
-					{mensagem && <p className="mt-4 text-green-600 text-center font-semibold">{mensagem}</p>}
+					{mensagem && (
+						<p className={`mt-4 text-center font-semibold ${mensagem.startsWith('Cadastro') ? 'text-green-600' : 'text-red-600'}`}>{mensagem}</p>
+					)}
 					<div className="mt-6 text-center">
 						<a href="/login" className="inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-blue-400 to-pink-400 text-white font-semibold shadow-md hover:from-pink-400 hover:to-blue-400 transition-all duration-200">Já tem conta? Faça login</a>
 					</div>

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 
 
-function Login() {
-	const [form, setForm] = useState({ email: '', senha: '' });
+
+function Login({ onLogin }) {
+	const [form, setForm] = useState({ email: '', password: '' });
 	const [mensagem, setMensagem] = useState('');
 
 	const handleChange = (e) => {
@@ -11,8 +12,23 @@ function Login() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		// Aqui você pode fazer a requisição para o backend
-		setMensagem('Login realizado com sucesso!');
+		try {
+			const response = await fetch('http://localhost:5000/users/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(form),
+			});
+			if (response.ok) {
+				setMensagem('Login realizado com sucesso!');
+				if (onLogin) onLogin();
+			} else {
+				setMensagem('Login falhou. Verifique seu email e senha.');
+			}
+		} catch (error) {
+			setMensagem('Erro ao conectar ao servidor.');
+		}
 	};
 
 	return (
@@ -36,9 +52,9 @@ function Login() {
 						/>
 						<input
 							type="password"
-							name="senha"
+							name="password"
 							placeholder="Senha"
-							value={form.senha}
+							value={form.password}
 							onChange={handleChange}
 							required
 							className="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg shadow-sm"
@@ -50,7 +66,9 @@ function Login() {
 							Entrar
 						</button>
 					</form>
-					{mensagem && <p className="mt-4 text-green-600 text-center font-semibold">{mensagem}</p>}
+					{mensagem && (
+						<p className={`mt-4 text-center font-semibold ${mensagem.startsWith('Login realizado') ? 'text-green-600' : 'text-red-600'}`}>{mensagem}</p>
+					)}
 					<div className="mt-6 text-center">
 						<a href="/cadastro" className="inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-pink-400 to-blue-400 text-white font-semibold shadow-md hover:from-blue-400 hover:to-pink-400 transition-all duration-200">Não tem conta? Cadastre-se</a>
 					</div>
