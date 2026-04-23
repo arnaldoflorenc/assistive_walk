@@ -18,4 +18,19 @@ model User {
   name     String
   email    String @unique
   password String
+
+  subscription Subscription?
+}
+
+model Subscription{
+  id      Int    @id @default(autoincrement())
+  plan    String
+  status  String
+
+  //foring key for User
+  user      User      @relation(fields: [userID], references: [id])
+  userID    Int       @unique
+
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
 }

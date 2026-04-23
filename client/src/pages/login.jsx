@@ -20,7 +20,9 @@ function Login({ onLogin }) {
 				},
 				body: JSON.stringify(form),
 			});
-			if (response.ok) {
+			const data = await response.json();
+			if (response.ok && data.token) {
+				localStorage.setItem('token', data.token);
 				setMensagem('Login realizado com sucesso!');
 				if (onLogin) onLogin();
 			} else {

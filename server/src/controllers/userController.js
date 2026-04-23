@@ -1,5 +1,6 @@
 import prisma from '../database/prisma.js';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 export const registerUser = async (req, res) => {
     try {
@@ -35,29 +36,73 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body; //necessary fields for login an user
-
-        if (!email || !password) { //check if all fields are filled, if not, return an error message
+        const { email, password } = req.body;
+        if (!email || !password) {
             return res.status(400).json({ message: 'Email and password are required' });
         }
-
-        const user = await prisma.user.findUnique({ //find user by email
-            where: { email }
-        });
-
-        if (!user) { //if user not found, return an error message
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
-
-        const check_pass = await bcrypt.compare(password, user.password); //compare the password with the hashed password in database
-
-        if (!check_pass) { //if password is incorrect, return an error message
+        const check_pass = await bcrypt.compare(password, user.password);
+        if (!check_pass) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
-
-        res.status(200).json({ message: 'User logged in successfully', user }); //return success message and the user data
-    }catch (error) {
+        // Gerar token JWT
+        const token = jwt.sign(
+            {userId: user.id, email: user.email, name: user.name},
+            process.env.JWT_SECRET || 'segredo_super_secreto',
+            { expiresIn: '2h' }
+        );   
+        res.status(200).json({ message: 'User logged in successfully', token, user: { id: user.id, email: user.email, name: user.name } });
+    } catch (error) {
         console.error('Error Loggin in User:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getUserProfile = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+        const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, name: true, email: true } });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getUserSubscription = async (req, res) => {
+    try {
+        const userID = req.user.userId;
+        const subscription = await prisma.subscription.findUnique({ where: { userID: userID }, select: { plan: true, expiresAt: true, status: true} });
+        if (!subscription) {
+            return res.status(404).json({ message: 'Subscription not found' });
+        }
+        const fomated_date = subscription.expiresAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        subscription.expiresAt = fomated_date;
+        res.status(200).json(subscription);
+    } catch (error) {
+        console.error('Error fetching user subscription:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const registerSubscription = async (req, res) => {
+    try {
+        const userID = req.user.userId;
+        const {plan} = req.body;
+
+        await prisma.$executeRaw`
+            CALL CreateSubscription(${userID}, ${plan})
+        `;
+
+        res.status(201).json({ message: 'Subscription registered successfully'});
+    } catch (error) {
+        console.error('Error registering subscription:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
