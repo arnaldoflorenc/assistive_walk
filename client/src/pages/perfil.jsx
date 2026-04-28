@@ -22,14 +22,14 @@ const Perfil = () => {
   }, []);
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-4">Perfil do Usuário</h2>
-      <div className="bg-white rounded-lg shadow p-6 max-w-md">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-8">
+      <h2 className="text-3xl font-bold mb-6 text-center">Perfil do Usuário</h2>
+      <div className="bg-white rounded-lg shadow p-8 w-full max-w-md flex flex-col items-center">
         {user ? (
           <>
-            <p><strong>Nome:</strong> {user.name}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Status:</strong> Ativo</p>
+            <p className="mb-2"><strong>Nome:</strong> {user.name}</p>
+            <p className="mb-2"><strong>Email:</strong> {user.email}</p>
+            <p className="mb-2"><strong>Status:</strong> Ativo</p>
           </>
         ) : (
           <p>{erro || 'Carregando...'}</p>

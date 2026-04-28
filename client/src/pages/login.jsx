@@ -23,6 +23,10 @@ function Login({ onLogin }) {
 			const data = await response.json();
 			if (response.ok && data.token) {
 				localStorage.setItem('token', data.token);
+				// Salva nome e email do usuário para exibir na sidebar
+				if (data.user) {
+				  localStorage.setItem('user', JSON.stringify({ name: data.user.name, email: data.user.email }));
+				}
 				setMensagem('Login realizado com sucesso!');
 				if (onLogin) onLogin();
 			} else {

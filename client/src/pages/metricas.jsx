@@ -22,14 +22,14 @@ const Metricas = () => {
   }, []);
 
   return (
-    <div className="p-8">
-      <h2 className="text-2xl font-bold mb-4">Métricas da IA</h2>
-      <div className="bg-white rounded-lg shadow p-6 max-w-md">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-8">
+      <h2 className="text-3xl font-bold mb-6 text-center">Métricas da IA</h2>
+      <div className="bg-white rounded-lg shadow p-8 w-full max-w-md flex flex-col items-center">
         {metricas ? (
           <>
-            <p><strong>Textos gerados:</strong> {metricas.textosGerados}</p>
-            <p><strong>Palavras geradas:</strong> {metricas.palavrasGeradas}</p>
-            <p><strong>Última geração:</strong> {metricas.ultimaGeracao}</p>
+            <p className="mb-2"><strong>Textos gerados:</strong> {metricas.textosGerados}</p>
+            <p className="mb-2"><strong>Palavras geradas:</strong> {metricas.palavrasGeradas}</p>
+            <p className="mb-2"><strong>Última geração:</strong> {metricas.ultimaGeracao}</p>
           </>
         ) : (
           <p>{erro || 'Carregando...'}</p>

@@ -1,5 +1,5 @@
 import express from "express";
-import { registerUser, loginUser, getUserProfile, getUserSubscription } from "../controllers/userController.js";
+import { registerUser, loginUser, getUserProfile, getUserSubscription, registerSubscription } from "../controllers/userController.js";
 import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -10,6 +10,7 @@ router.post('/login', loginUser); //route for login an user (userController)
 // Rotas protegidas
 router.get('/me', authenticateToken, getUserProfile);
 router.get('/assinatura', authenticateToken, getUserSubscription);
+router.post('/assinatura', authenticateToken, registerSubscription);
 
 router.get('/metricas', authenticateToken, (req, res) => {
 	// Exemplo de resposta de métricas
