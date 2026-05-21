@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 
 function Login({ onLogin }) {
+	const navigate = useNavigate();
 	const [form, setForm] = useState({ email: '', password: '' });
 	const [mensagem, setMensagem] = useState('');
 
@@ -21,14 +23,15 @@ function Login({ onLogin }) {
 				body: JSON.stringify(form),
 			});
 			const data = await response.json();
-			if (response.ok && data.token) {
-				localStorage.setItem('token', data.token);
-				// Salva nome e email do usuário para exibir na sidebar
-				if (data.user) {
-				  localStorage.setItem('user', JSON.stringify({ name: data.user.name, email: data.user.email }));
-				}
-				setMensagem('Login realizado com sucesso!');
-				if (onLogin) onLogin();
+						if (response.ok && data.token) {
+								localStorage.setItem('token', data.token);
+								// Salva nome e email do usuário para exibir na sidebar
+								if (data.user) {
+									localStorage.setItem('user', JSON.stringify({ name: data.user.name, email: data.user.email }));
+								}
+								setMensagem('Login realizado com sucesso!');
+								if (onLogin) onLogin();
+								navigate('/perfil');
 			} else {
 				setMensagem('Login falhou. Verifique seu email e senha.');
 			}
