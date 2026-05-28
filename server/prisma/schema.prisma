@@ -20,6 +20,7 @@ model User {
   password String
 
   subscription Subscription?
+  metricas     Metricas?
 }
 
 model Subscription{
@@ -33,4 +34,23 @@ model Subscription{
 
   createdAt DateTime  @default(now())
   expiresAt DateTime
+}
+
+model Metricas{
+  id        Int   @id @default(autoincrement())
+  total     Int
+  cachorro  Int
+  arvore    Int
+  veiculos  Int
+  poste     Int
+  cone      Int
+  pessoa    Int
+  placa     Int
+  semaforo  Int
+  imgs      Int
+
+
+  //foring key for User
+  user    User  @relation(fields: [userID], references: [id])
+  userID  Int   @unique
 }
